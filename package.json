@@ -1,0 +1,21 @@
+{
+  "name": "syncpoint-node",
+  "version": "0.0.1",
+  "description": "SyncPoint NodeJS Client SDK",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel src -d lib -s",
+    "bundle": "browserify index.js -o bundle.js"
+  },
+  "author": "CodeMeow5",
+  "license": "MIT",
+  "dependencies": {
+    "buffer": "^5.0.7",
+    "http-pack": "git+https://github.com/codemeow5/HttpPack.git",
+    "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1"
+  }
+}

@@ -1,0 +1,101 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SyncPoint</title>
+  <script src="./bundle.js"></script>
+</head>
+<body>
+  <input id="username" type="text" />&nbsp;<input id="start" type="button" value="Start" />
+  <br /><br /><br /><br />
+  <input id="p1" type="text" /><br /><br />
+  <input id="p2" type="text" /><br /><br />
+  <input id="p3" type="text" /><br /><br />
+  <input id="p4" type="text" /><br /><br />
+  <input id="p5" type="text" /><br /><br />
+  <input id="p6" type="text" /><br /><br />
+  <input id="p7" type="text" /><br /><br />
+  <input id="p8" type="text" /><br /><br />
+
+  <script type="text/javascript">
+
+    function guid() {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+        return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
+    }
+
+    var node = guid();
+
+    document.getElementById('start').onclick = function(e){
+        var username = document.getElementById('username').value;
+        if(username == undefined || username.length == 0){
+            return;
+        }
+
+        document.getElementById('start').disabled = true;
+        var syncPoint = new SyncPoint({
+            requestOpts: {
+                url: 'http://127.0.0.1:8080/sync',
+                headers: {
+                    'SyncPoint-Scope': username + ':' + node
+                }
+            }
+        });
+
+        /*
+        * localConflictsPoints: points - anonymousPoints
+        * newPoints: anonymousPoints - points
+        */
+        syncPoint.registerResolvingReverseConflicts(function(anonymousPoints, points, number){
+            var localConflictsPoints = [];
+            for(var i in points){
+                var point = points[i];
+                var isConflicts = false;
+                for(var j in anonymousPoints){
+                    var anonymousPoint = anonymousPoints[j];
+                    if(anonymousPoint.data.id == point.data.id){
+                        isConflicts = true;
+                        break;
+                    }
+                }
+                if(!isConflicts){
+                    localConflictsPoints.push(point);
+                }
+            }
+            var newPoints = [];
+            for(var i in anonymousPoints){
+                var anonymousPoint = anonymousPoints[i];
+                anonymousPoint['syncNumber'] = ++number;
+                newPoints.push(anonymousPoint);
+            }
+            return [localConflictsPoints, newPoints];
+        });
+
+        syncPoint.registerImplementHandle(function(point){
+            var p = document.getElementById(point['id']);
+            if(p != undefined){
+                p.value = point['value'];
+            }
+        });
+
+        var ps = document.getElementsByTagName('input');
+        for(var i = 0; i < ps.length; i++){
+            ps[i].onchange = function(e){
+                console.log(e);
+                var data = {
+                    'id': e.target.id,
+                    'value': e.target.value
+                }
+                syncPoint.addPoint(data);
+            }
+        }
+
+        syncPoint.startSync();
+    }
+
+  </script>
+</body>
+</html>

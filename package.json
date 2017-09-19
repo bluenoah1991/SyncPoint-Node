@@ -11,8 +11,10 @@
   "license": "MIT",
   "dependencies": {
     "buffer": "^5.0.7",
-    "http-pack": "git+https://github.com/codemeow5/HttpPack.git",
-    "lodash": "^4.17.4"
+    "http-pack": "git+https://github.com/codemeow5/HttpPack.git#develop",
+    "lodash": "^4.17.4",
+    "request": "^2.81.0",
+    "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

@@ -1,7 +1,6 @@
 import _ from 'lodash';
 
-import {HttpPack} from 'http-pack';
-
+import HttpClient from './HttpClient';
 import WebLocalStorage from './WebLocalStorage';
 
 export default class SyncPoint{
@@ -13,10 +12,10 @@ export default class SyncPoint{
         this.storage = new WebLocalStorage();
         // Important! Serial execution
         this.syncId = this.storage.syncId();
-        _.assign(options, {
-            callback: this._respondHandle.bind(this)
-        });
-        this.httpPack = new HttpPack(options);
+        this.httpClient = new HttpClient(options);
+        this.httpClient.registerCallback(this._respondHandle.bind(this));
+        this.httpClient.startLongPolling();
+        this.httpClient.startPushStream();
     }
 
     _numberOfSegment(number){
@@ -29,7 +28,7 @@ export default class SyncPoint{
          return newSegmentNumber << 16;
     }   
 
-    _respondHandle(payload, response){
+    _respondHandle(payload){
         let data = JSON.parse(payload.toString('utf-8'));
         let newNumberOfSegment = data['newNumberOfSegment'];
         if(newNumberOfSegment != undefined){
@@ -119,7 +118,7 @@ export default class SyncPoint{
             'clientNumberOfSegment': numberOfSegment,
             'newPoints': newPoints
         });
-        this.httpPack.commit(new Buffer(data, 'utf-8'), 2);
+        this.httpClient.commit(new Buffer(data, 'utf-8'), 2);
         return true;
     }
 }

@@ -37,12 +37,8 @@
 
         document.getElementById('start').disabled = true;
         var syncPoint = new SyncPoint({
-            requestOpts: {
-                url: 'http://127.0.0.1:8080/sync',
-                headers: {
-                    'SyncPoint-Scope': username + ':' + node
-                }
-            }
+            url: 'http://127.0.0.1:8080',
+            scope: username + ':' + node
         });
 
         /*

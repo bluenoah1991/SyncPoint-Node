@@ -108,11 +108,11 @@ var HttpClient = function () {
         value: function _pushStream() {
             this.httpPack.generateBody().then(function (requestBody) {
                 if (requestBody == undefined || requestBody.length == 0) {
-                    this.handle = setTimeout(this._pushStream, 1000);
+                    this.handle = setTimeout(this._pushStream, 100);
                     return null;
                 } else {
                     this._newRequest('' + this.url + this.incoming_address, this.scope, requestBody).then(function () {
-                        this.handle = setTimeout(this._pushStream, 1000);
+                        this.handle = setTimeout(this._pushStream, 100);
                     }.bind(this));
                 }
             }.bind(this));
